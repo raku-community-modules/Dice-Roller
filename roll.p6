@@ -5,3 +5,4 @@ use lib 'lib';
 use Dice::Roller;
 
 my $dice = Dice::Roller.new( string => '1d20' );
+say $dice.perl;
