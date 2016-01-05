@@ -42,23 +42,18 @@ class Roll {
 
 class DiceActions {
 	method TOP($/) {
-		say "TOP: ", $/;
-		say "TOP ROLLS THING:", $<roll>».made;
-		make $<roll>;
+		make $<roll>».made;
 	}
 	method roll($/) {
-		say "ROLL: ", $/;
 		make Roll.new( quantity => $<quantity>.made, die => $<die>.made, modifiers => $<modifier>».made );
 	}
 	method quantity($/) {
 		make $/.Int;
 	}
 	method die($/) {
-		say "DIE: ", $/;
 		make Die.new( faces => $0.Int );
 	}
 	method modifier($/) {
-		say "MOD: ", $/;
 		make Modifier.new( value => "$0$1".Int );
 	}
 }
