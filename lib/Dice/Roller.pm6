@@ -10,6 +10,23 @@ grammar DiceGrammar {
 	token         die { d(\d+) }
 }
 
+# Other classes we use internally to represent the parsed dice string:-
+# -------------------------------------------------------------------
+
+class Die {
+	has Int $.faces;	# All around me different faces I see
+}
+
+# Actions used to build our internal representation from the grammar:-
+# ------------------------------------------------------------------
+
+class DiceActions {
+	method die($/) {
+		say "Building a die with $0 faces!";
+		$/.make(Die.new( faces => $0.Int ));
+	}
+}
+
 # Attributes of a Dice::Roller:-
 # ----------------------------
 
@@ -33,9 +50,3 @@ method new(Str $string) {
 # http://doc.perl6.org/language/objects#Object_Construction
 
 
-# Other classes we use internally to represent the parsed dice string:-
-# -------------------------------------------------------------------
-
-class Die {
-	has Int $.faces;	# All around me different faces I see
-}
