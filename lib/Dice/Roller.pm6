@@ -21,9 +21,17 @@ class Die {
 # ------------------------------------------------------------------
 
 class DiceActions {
+	method TOP($/) {
+		make $<roll>.made;
+	}
+	method roll($/) {
+		make { quantity => $<quantity>.made, die => $<die>.made };
+	}
+	method quantity($/) {
+		make $/.Int;
+	}
 	method die($/) {
-		say "Building a die with $0 faces!";
-		$/.make(Die.new( faces => $0.Int ));
+		make Die.new( faces => $0.Int );
 	}
 }
 
@@ -35,13 +43,13 @@ class DiceActions {
 # used publically. Note that this accessor will be read-only by default.
 
 has Str $.string is required;
-has Match $.parsed is required;
+has $.parsed is required;
 
 # We define a custom .new method to allow for positional (non-named) parameters:-
 method new(Str $string) {
-	my Match $match = DiceGrammar.parse($string);
+	my Match $match = DiceGrammar.parse($string, :actions(DiceActions));
 	say "Parsed: ", $match.gist;
-	return self.bless(string => $string, parsed => $match);
+	return self.bless(string => $string, parsed => $match.made);
 }
 
 # Note that in general, doing extra constructor work should happen in the BUILD submethod; doing our own

@@ -11,3 +11,11 @@ Parsed: ｢1d20｣
   die => ｢d20｣
    0 => ｢20｣
 
+$ ./roll.p6 
+Parsed: ｢1d20｣
+ roll => ｢1d20｣
+  quantity => ｢1｣
+  die => ｢d20｣
+   0 => ｢20｣
+Dice::Roller.new(string => "1d20", parsed => ${:die(Dice::Roller::Die.new(faces => 20)), :quantity(1)})
+
