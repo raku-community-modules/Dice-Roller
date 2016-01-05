@@ -23,6 +23,7 @@ has Match $.parsed is required;
 # We define a custom .new method to allow for positional (non-named) parameters:-
 method new(Str $string) {
 	my Match $match = DiceGrammar.parse($string);
+	say "Parsed: ", $match.gist;
 	return self.bless(string => $string, parsed => $match);
 }
 
