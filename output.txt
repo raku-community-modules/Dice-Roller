@@ -1,0 +1,6 @@
+$ ./roll.p6 
+Dice::Roller.new(string => "1d20")
+
+$ ./roll.p6 
+Dice::Roller.new(string => "1d20", parsed => Match.new(ast => Any, list => (), hash => Map.new((:roll(Match.new(ast => Any, list => (), hash => Map.new((:die(Match.new(ast => Any, list => (Match.new(ast => Any, list => (), hash => Map.new(()), orig => "1d20", to => 4, from => 2),), hash => Map.new(()), orig => "1d20", to => 4, from => 1)),:quantity(Match.new(ast => Any, list => (), hash => Map.new(()), orig => "1d20", to => 1, from => 0)))), orig => "1d20", to => 4, from => 0)))), orig => "1d20", to => 4, from => 0))
+
