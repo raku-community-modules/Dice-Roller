@@ -4,34 +4,62 @@ unit class Dice::Roller;
 # ------------------------------
 
 grammar DiceGrammar {
-	token         TOP { ^ <roll> $ }
-	token        roll { <quantity> <die> }
+	token         TOP { ^ <roll> [ ';' \s* <roll> ]* ';'? $ }
+	token        roll { <quantity> <die> \s* <modifier>* \s* }
 	token    quantity { \d+ }
 	token         die { d(\d+) }
+	token    modifier { ('+' | '-') \s* (\d+) \s* }
 }
 
 # Other classes we use internally to represent the parsed dice string:-
 # -------------------------------------------------------------------
 
+# A single polyhedron.
 class Die {
-	has Int $.faces;	# All around me different faces I see
+	has Int $.faces;		# All around me different faces I see
+	has @.distribution;	# We will use this when rolling; this allows for non-linear dice to be added later.
+	submethod BUILD(:$!faces) {
+		# Initialise the distribution of values with a range of numbers from 1 to the number of faces the die has.
+		@!distribution = 1..$!faces;
+	}
 }
+
+# Some fixed value adjusting a roll's total outcome.
+class Modifier {
+	has $.value;
+}
+
+# A roll of one or more polyhedra, with some rule about how we combine them.
+class Roll {
+	has Int $.quantity;
+	has Die $.die;
+	has Modifier @.modifiers;
+}
+
 
 # Actions used to build our internal representation from the grammar:-
 # ------------------------------------------------------------------
 
 class DiceActions {
 	method TOP($/) {
-		make $<roll>.made;
+		say "TOP: ", $/;
+		say "TOP ROLLS THING:", $<roll>».made;
+		make $<roll>;
 	}
 	method roll($/) {
-		make { quantity => $<quantity>.made, die => $<die>.made };
+		say "ROLL: ", $/;
+		make Roll.new( quantity => $<quantity>.made, die => $<die>.made, modifiers => $<modifier>».made );
 	}
 	method quantity($/) {
 		make $/.Int;
 	}
 	method die($/) {
+		say "DIE: ", $/;
 		make Die.new( faces => $0.Int );
+	}
+	method modifier($/) {
+		say "MOD: ", $/;
+		make Modifier.new( value => "$0$1".Int );
 	}
 }
 
@@ -47,7 +75,8 @@ has $.parsed is required;
 
 # We define a custom .new method to allow for positional (non-named) parameters:-
 method new(Str $string) {
-	my Match $match = DiceGrammar.parse($string, :actions(DiceActions));
+	my $match = DiceGrammar.parse($string, :actions(DiceActions));
+	die "Failed to parse '$string'!" unless $match;
 	say "Parsed: ", $match.gist;
 	return self.bless(string => $string, parsed => $match.made);
 }
