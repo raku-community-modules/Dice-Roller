@@ -29,6 +29,10 @@ class Die {
 		$!value = @.distribution.pick;
 	}
 
+	method total {
+		return $!value // 0;
+	}
+
 	method Str {
 		return "[$!value]" if $!value;
 		return "(d$!faces)";
@@ -38,6 +42,10 @@ class Die {
 # Some fixed value adjusting a roll's total outcome.
 class Modifier {
 	has Int $.value is required;
+
+	method total {
+		return $!value;
+	}
 
 	method Str {
 		return $!value >= 0 ?? "+$!value" !! "-$!value";
@@ -52,6 +60,13 @@ class Roll {
 
 	method roll {
 		@!dice».roll;
+	}
+
+	method total {
+		my @totals = @!dice».total, @!modifiers».total;
+		say "Summing die values and modifiers: " ~ @totals.perl;
+		say "Which gets us: " ~ [+] @totals;
+		return [+] @totals;
 	}
 
 	method Str {
@@ -120,6 +135,10 @@ method new(Str $string) {
 
 method roll {
 	$!parsed».roll();
+}
+
+method total {
+	return $!parsed».total;
 }
 
 method Str {
