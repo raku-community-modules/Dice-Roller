@@ -18,7 +18,7 @@ grammar DiceGrammar {
 class Die {
 	has Int $.faces;		# All around me different faces I see
 	has @.distribution;	# We will use this when rolling; this allows for non-linear dice to be added later.
-	has $.value;			# Which face is showing, if any?
+	has $.value is rw;	# Which face is showing, if any?
 
 	submethod BUILD(:$!faces) {
 		# Initialise the distribution of values with a range of numbers from 1 to the number of faces the die has.
@@ -114,6 +114,6 @@ method roll {
 }
 
 method Str {
-	[~] $.parsed;
+	$.parsed.Str;
 }
 
