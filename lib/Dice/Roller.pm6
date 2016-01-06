@@ -37,7 +37,7 @@ class Die {
 
 # Some fixed value adjusting a roll's total outcome.
 class Modifier {
-	has $!value;
+	has Int $.value is required;
 
 	method Str {
 		return $!value >= 0 ?? "+$!value" !! "-$!value";
