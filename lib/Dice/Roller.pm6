@@ -47,15 +47,15 @@ class Modifier {
 # A roll of one or more polyhedra, with some rule about how we combine them.
 class Roll {
 	has Int $.quantity;
-	has Die $.die;
+	has Die @.dice;
 	has Modifier @.modifiers;
 
 	method roll {
-		$!die.roll;
+		@!dice».roll;
 	}
 
 	method Str {
-		return $!quantity ~ $!die [~] @!modifiers;
+		return $!quantity [~] @!dice [~] @!modifiers;
 	}
 }
 
@@ -69,7 +69,13 @@ class DiceActions {
 		make $<roll>».made;
 	}
 	method roll($/) {
-		make Roll.new( quantity => $<quantity>.made, die => $<die>.made, modifiers => $<modifier>».made );
+		# While there is only one 'die' token within the 'roll' grammar, we actually want
+		# to construct the Roll object with multiple Die objects as appropriate, so that
+		# we can roll and remember the face value of individual die.
+		my Int $quantity = $<quantity>.made;
+		my Die @dice = (1..$quantity).map({ $<die>.made.clone });
+		my Modifier @modifiers = $<modifier>».made;
+		make Roll.new( quantity => $quantity, dice => @dice, modifiers => @modifiers );
 	}
 	method quantity($/) {
 		make $/.Int;
