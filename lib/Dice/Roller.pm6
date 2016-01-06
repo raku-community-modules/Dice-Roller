@@ -123,6 +123,6 @@ method roll {
 }
 
 method Str {
-	return "DICE! WOO! " ~ join('; ', $!parsed);
+	return "DICE! WOO! " ~ join('; ', $!parsed.flat);
 }
 

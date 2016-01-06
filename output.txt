@@ -42,3 +42,7 @@ Rolled '3d6+4; 1d4' and got: DICE! WOO! [1][6][2]+4 [2]
 (hmm, where's my ;?)
 
 
+Rolled '3d6+4; 1d4' and got: DICE! WOO! [6][5][4]+4; [2]
+
+aha.
+
