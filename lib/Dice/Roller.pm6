@@ -29,6 +29,22 @@ class Die {
 		$!value = @.distribution.pick;
 	}
 
+	method set-max {
+		$!value = @.distribution.max;
+	}
+
+	method set-min {
+		$!value = @.distribution.min;
+	}
+
+	method is-max returns Bool {
+		return $!value == @.distribution.max;
+	}
+
+	method is-min returns Bool {
+		return $!value == @.distribution.min;
+	}
+
 	method total {
 		return $!value // 0;
 	}
@@ -60,6 +76,22 @@ class Roll {
 
 	method roll {
 		@!dice».roll;
+	}
+
+	method set-max {
+		@!dice».set-max;
+	}
+
+	method set-min {
+		@!dice».set-min;
+	}
+
+	method is-max returns Bool {
+		return @!dice.all.is-max.Bool;
+	}
+
+	method is-min returns Bool {
+		return @!dice.all.is-min.Bool;
 	}
 
 	method total {
@@ -120,7 +152,7 @@ has $.parsed is required;
 method new(Str $string) {
 	my $match = DiceGrammar.parse($string, :actions(DiceActions));
 	die "Failed to parse '$string'!" unless $match;
-	say "Parsed: ", $match.gist;
+	# say "Parsed: ", $match.gist;
 	return self.bless(string => $string, parsed => $match.made);
 }
 
@@ -131,7 +163,26 @@ method new(Str $string) {
 
 
 method roll {
-	$!parsed».roll();
+	$!parsed».roll;
+	return self;
+}
+
+method set-max {
+	$!parsed».set-max;
+	return self;
+}
+
+method set-min {
+	$!parsed».set-min;
+	return self;
+}
+
+method is-max returns Bool {
+	return $!parsed.all.is-max.Bool;
+}
+
+method is-min returns Bool {
+	return $!parsed.all.is-min.Bool;
 }
 
 method total {

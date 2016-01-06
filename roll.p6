@@ -4,6 +4,21 @@ use v6;
 use lib 'lib';
 use Dice::Roller;
 
-my $dice = Dice::Roller.new('3d6+4; 1d4');
-$dice.roll;
-say "Rolled '" ~ $dice.string ~ "' and got: " ~ $dice ~ " total=" ~ $dice.total;
+sub show($dice) {
+	say "Rolled '" ~ $dice.string ~ "'",
+	    " and " ~ critmaybe($dice) ~ ": " ~ $dice,
+       " total=" ~ $dice.total;
+}
+
+# whether something is a 'crit' or not is kind of dependent on the system,
+# but we can test for "all rolled faces show the maximum".
+sub critmaybe($dice) {
+	given $dice {
+		when .is-max { "crit!" }
+		when .is-min { "fumbled!" }
+		default { "got" }
+	}
+}
+
+show(Dice::Roller.new('1d20 + 3').roll);
+show(Dice::Roller.new('3d4 + 1').roll);
