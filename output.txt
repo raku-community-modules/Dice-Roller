@@ -37,3 +37,8 @@ Cannot modify an immutable Any
   in method roll at /home/james/source/bitbucket/dice-roller/lib/Dice/Roller.pm6 line 113
   in block <unit> at ./roll.p6 line 8
 
+Rolled '3d6+4; 1d4' and got: DICE! WOO! [1][6][2]+4 [2]
+
+(hmm, where's my ;?)
+
+
