@@ -26,22 +26,21 @@ class Die {
 	}
 	
 	method roll {
-		say "Calling roll() on a " ~ self;
-		$.value = @.distribution.pick;
+		$!value = @.distribution.pick;
 	}
 
 	method Str {
-		return "[$.value]" if $.value;
-		return "(d$.faces)";
+		return "[$!value]" if $!value;
+		return "(d$!faces)";
 	}
 }
 
 # Some fixed value adjusting a roll's total outcome.
 class Modifier {
-	has $.value;
+	has $!value;
 
 	method Str {
-		return $.value >= 0 ?? "+$.value" !! "-$.value";
+		return $!value >= 0 ?? "+$!value" !! "-$!value";
 	}
 }
 
@@ -52,12 +51,11 @@ class Roll {
 	has Modifier @.modifiers;
 
 	method roll {
-		say "Calling roll() on a " ~ self;
-		$.die.roll;
+		$!die.roll;
 	}
 
 	method Str {
-		return $.quantity ~ $.die [~] @.modifiers;
+		return $!quantity ~ $!die [~] @!modifiers;
 	}
 }
 
@@ -109,11 +107,10 @@ method new(Str $string) {
 
 
 method roll {
-	say "Calling roll() on Dice::Roller";
-	$.parsed».roll();
+	$!parsed».roll();
 }
 
 method Str {
-	$.parsed.Str;
+	$!parsed.Str;
 }
 
