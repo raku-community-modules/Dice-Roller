@@ -64,10 +64,8 @@ class Roll {
 
 	method total {
 		my $total = 0;
-		say "adding dice totals (" ~ @!dice».total ~ "), ", [+] @!dice».total;
-		$total += [+] @!dice».total;
-		say "adding modifier totals (" ~ @!modifiers».total ~ "), ", [+] @!modifiers».total;
-		$total += [+] @!modifiers».total;
+		say "adding dice and modifier totals (" ~ (@!dice».total, @!modifiers».total) ~ "), ", [+] (@!dice».total, @!modifiers».total);
+		$total += [+] (@!dice».total, @!modifiers».total);
 		return $total;
 	}
 
