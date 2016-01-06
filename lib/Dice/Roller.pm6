@@ -55,7 +55,13 @@ class Roll {
 	}
 
 	method Str {
-		return $!quantity [~] @!dice [~] @!modifiers;
+		if any(@!dice».value) {
+			# one or more dice have been rolled, we don't need to prefix our quantity, they'll have literal values.
+			return join('', @!dice) ~ join('', @!modifiers);
+		} else {
+			# no dice have been rolled, we return a more abstract representation.
+			return $!quantity ~ @!dice[0] ~ join('', @!modifiers);
+		}
 	}
 }
 

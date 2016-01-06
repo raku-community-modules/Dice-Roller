@@ -6,4 +6,4 @@ use Dice::Roller;
 
 my $dice = Dice::Roller.new('3d6+4');
 $dice.roll;
-say $dice.Str;
+say "Rolled '" ~ $dice.string ~ "' and got: " ~ $dice;
