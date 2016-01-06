@@ -4,5 +4,5 @@ use v6;
 use lib 'lib';
 use Dice::Roller;
 
-my $dice = Dice::Roller.new('1d20');
+my $dice = Dice::Roller.new('3d6+4');
 say $dice.perl;
