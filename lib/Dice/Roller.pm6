@@ -75,7 +75,7 @@ class DiceActions {
 		my Int $quantity = $<quantity>.made;
 		my Die @dice = (1..$quantity).map({ $<die>.made.clone });
 		my Modifier @modifiers = $<modifier>».made;
-		make Roll.new( quantity => $quantity, dice => @dice, modifiers => @modifiers );
+		make Roll.new( :$quantity, :@dice, :@modifiers );
 	}
 	method quantity($/) {
 		make $/.Int;
