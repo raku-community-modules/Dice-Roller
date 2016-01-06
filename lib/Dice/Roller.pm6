@@ -63,10 +63,16 @@ class Roll {
 	}
 
 	method total {
-		my @totals = @!dice».total, @!modifiers».total;
-		say "Summing die values and modifiers: " ~ @totals.perl;
-		say "Which gets us: " ~ [+] @totals;
-		return [+] @totals;
+		my $total = 0;
+		for @!dice -> $thing {
+			say "adding " ~ $thing.gist ~ "'s total, " ~ $thing.total;
+			$total += $thing.total;
+		}
+		for @!modifiers -> $thing {
+			say "adding " ~ $thing.gist ~ "'s total, " ~ $thing.total;
+			$total += $thing.total;
+		}
+		return $total;
 	}
 
 	method Str {
