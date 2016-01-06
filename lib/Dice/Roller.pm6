@@ -18,15 +18,31 @@ grammar DiceGrammar {
 class Die {
 	has Int $.faces;		# All around me different faces I see
 	has @.distribution;	# We will use this when rolling; this allows for non-linear dice to be added later.
+	has $.value;			# Which face is showing, if any?
+
 	submethod BUILD(:$!faces) {
 		# Initialise the distribution of values with a range of numbers from 1 to the number of faces the die has.
 		@!distribution = 1..$!faces;
+	}
+	
+	method roll {
+		say "Calling roll() on a " ~ self;
+		$.value = @.distribution.pick;
+	}
+
+	method Str {
+		return "[$.value]" if $.value;
+		return "(d$.faces)";
 	}
 }
 
 # Some fixed value adjusting a roll's total outcome.
 class Modifier {
 	has $.value;
+
+	method Str {
+		return $.value >= 0 ?? "+$.value" !! "-$.value";
+	}
 }
 
 # A roll of one or more polyhedra, with some rule about how we combine them.
@@ -34,6 +50,15 @@ class Roll {
 	has Int $.quantity;
 	has Die $.die;
 	has Modifier @.modifiers;
+
+	method roll {
+		say "Calling roll() on a " ~ self;
+		$.die.roll;
+	}
+
+	method Str {
+		return $.quantity ~ $.die [~] @.modifiers;
+	}
 }
 
 
@@ -42,6 +67,7 @@ class Roll {
 
 class DiceActions {
 	method TOP($/) {
+		# .parse returns an array of Roll objects with this Actions object.
 		make $<roll>».made;
 	}
 	method roll($/) {
@@ -81,4 +107,13 @@ method new(Str $string) {
 # and defining our own 'new' seems to be the best way to accomplish this.
 # http://doc.perl6.org/language/objects#Object_Construction
 
+
+method roll {
+	say "Calling roll() on Dice::Roller";
+	$.parsed».roll();
+}
+
+method Str {
+	[~] $.parsed;
+}
 

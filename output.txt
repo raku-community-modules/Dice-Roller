@@ -19,3 +19,21 @@ Parsed: ｢1d20｣
    0 => ｢20｣
 Dice::Roller.new(string => "1d20", parsed => ${:die(Dice::Roller::Die.new(faces => 20)), :quantity(1)})
 
+$ ./roll.p6 
+Parsed: ｢3d6+4｣
+ roll => ｢3d6+4｣
+  quantity => ｢3｣
+  die => ｢d6｣
+   0 => ｢6｣
+  modifier => ｢+4｣
+   0 => ｢+｣
+   1 => ｢4｣
+Calling roll() on Dice::Roller
+Calling roll() on a 3(d6)+4
+Calling roll() on a (d6)
+Cannot modify an immutable Any
+  in method roll at /home/james/source/bitbucket/dice-roller/lib/Dice/Roller.pm6 line 30
+  in method roll at /home/james/source/bitbucket/dice-roller/lib/Dice/Roller.pm6 line 56
+  in method roll at /home/james/source/bitbucket/dice-roller/lib/Dice/Roller.pm6 line 113
+  in block <unit> at ./roll.p6 line 8
+
