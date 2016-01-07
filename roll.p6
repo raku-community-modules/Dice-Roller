@@ -7,7 +7,7 @@ use Dice::Roller;
 sub show($dice) {
 	say "Rolled '" ~ $dice.string ~ "'",
 	    " and " ~ critmaybe($dice) ~ ": " ~ $dice,
-       " total=" ~ $dice.total;
+       " totals=" ~ $dice.individual-totals;
 }
 
 # whether something is a 'crit' or not is kind of dependent on the system,
@@ -21,10 +21,10 @@ sub critmaybe($dice) {
 }
 
 show(Dice::Roller.new('1d20 + 3').roll);
-show(Dice::Roller.new('3d4 + 1').roll);
+show(Dice::Roller.new('3d4 + 1; 2d6').roll);
 
 my $total = 0;
-$total += Dice::Roller.new('3d6').roll.total[0];
+$total += Dice::Roller.new('3d6').roll.total;
 say "Running total is $total";
-$total += Dice::Roller.new('3d6').roll.total[0];
+$total += Dice::Roller.new('3d6').roll.total;
 say "Running total is $total";

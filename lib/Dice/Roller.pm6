@@ -27,14 +27,17 @@ class Die {
 	
 	method roll {
 		$!value = @.distribution.pick;
+		return self;
 	}
 
 	method set-max {
 		$!value = @.distribution.max;
+		return self;
 	}
 
 	method set-min {
 		$!value = @.distribution.min;
+		return self;
 	}
 
 	method is-max returns Bool {
@@ -45,7 +48,7 @@ class Die {
 		return $!value == @.distribution.min;
 	}
 
-	method total {
+	method total returns Int {
 		return $!value // 0;
 	}
 
@@ -59,7 +62,7 @@ class Die {
 class Modifier {
 	has Int $.value is required;
 
-	method total {
+	method total returns Int {
 		return $!value;
 	}
 
@@ -94,7 +97,7 @@ class Roll {
 		return @!dice.all.is-min.Bool;
 	}
 
-	method total {
+	method total returns Int {
 		return [+] (@!dice».total, @!modifiers».total).flat;
 	}
 
@@ -185,7 +188,11 @@ method is-min returns Bool {
 	return $!parsed.all.is-min.Bool;
 }
 
-method total {
+method total returns Int {
+	return [+] self.individual-totals;
+}
+
+method individual-totals returns Array {
 	return $!parsed».total;
 }
 
