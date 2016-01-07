@@ -4,18 +4,18 @@ unit class Dice::Roller;
 # ------------------------------
 
 grammar DiceGrammar {
-	token                  TOP { ^ <expr> [ ';' \s* <expr> ]* ';'? $ }
+	token                  TOP { ^ <expression> [ ';' \s* <expression> ]* ';'? $ }
 
-	proto regex            expr { <...> }
-	regex       expr:sym<roll> { { say "parsing a roll?" } <roll> }
-	regex   expr:sym<modifier> { { say "parsing a mod?" } <modifier> }
-	regex          expr:sym<+> { { say "parsing a +?" } <expr> \s* '+' { say "I think it's a +." } \s* <expr> \s* { say "Yup, it was a +." } }
-	regex          expr:sym<-> { { say "parsing a -?" } <expr> \s* '-' { say "I think it's a -." } \s* <expr> \s* { say "Yup, it was a -." } }
+	proto token         add_op {*}
+	rule            expression { <term> [ <add_op> <term> ]* }
+	rule                  term { <roll> | <modifier> }
+	token        add_op:sym<+> { <sym> }
+	token        add_op:sym<-> { <sym> }
 
-	regex                 roll { <quantity> <die> \s* { say "yup, found a roll" } }
+	regex                 roll { <quantity> <die> }
 	token             quantity { \d+ }
 	token                  die { d(\d+) }
-	regex             modifier { ('+'? | '-') \s* (\d+) \s* {say "yup, found a modifier" } }
+	regex             modifier { (\d+) }
 }
 
 # Other classes we use internally to represent the parsed dice string:-
@@ -120,13 +120,31 @@ class Roll {
 }
 
 
+class Expression {
+	has @.values
+}
+
+
 # Actions used to build our internal representation from the grammar:-
 # ------------------------------------------------------------------
 
 class DiceActions {
 	method TOP($/) {
-		# .parse returns an array of Roll objects with this Actions object.
+		# .parse returns an array of Expression objects with this Actions object,
+		# one entry for each of the roll expressions separated by ';' in the string.
 		make $<roll>».made;
+	}
+	method expression($/) {
+		say "EXPRESSION! ", $/;
+	}
+	method add_op:sym<+>($/) {
+		say "ADD_OP<+>! ", $/;
+	}
+	method add_op:sym<->($/) {
+		say "ADD_OP<->! ", $/;
+	}
+	method term($/) {
+		say "TERM! ", $/;
 	}
 	method roll($/) {
 		# While there is only one 'die' token within the 'roll' grammar, we actually want
@@ -144,7 +162,7 @@ class DiceActions {
 		make Die.new( faces => $0.Int );
 	}
 	method modifier($/) {
-		make Modifier.new( value => "$0$1".Int );
+		make Modifier.new( value => "$0".Int );
 	}
 }
 
