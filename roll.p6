@@ -7,7 +7,7 @@ use Dice::Roller;
 sub show($dice) {
 	say "Rolled '" ~ $dice.string ~ "'",
 	    " and " ~ critmaybe($dice) ~ ": " ~ $dice,
-       " totals=" ~ $dice.individual-totals;
+       " totals=" ~ $dice.group-totals;
 }
 
 # whether something is a 'crit' or not is kind of dependent on the system,

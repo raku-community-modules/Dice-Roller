@@ -189,10 +189,10 @@ method is-min returns Bool {
 }
 
 method total returns Int {
-	return [+] self.individual-totals;
+	return [+] self.group-totals;
 }
 
-method individual-totals returns Array {
+method group-totals returns Array {
 	return $!parsed».total;
 }
 
