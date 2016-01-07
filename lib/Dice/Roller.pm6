@@ -4,11 +4,18 @@ unit class Dice::Roller;
 # ------------------------------
 
 grammar DiceGrammar {
-	token         TOP { ^ <roll> [ ';' \s* <roll> ]* ';'? $ }
-	token        roll { <quantity> <die> \s* <modifier>* \s* }
-	token    quantity { \d+ }
-	token         die { d(\d+) }
-	token    modifier { ('+' | '-') \s* (\d+) \s* }
+	token                  TOP { ^ <expr> [ ';' \s* <expr> ]* ';'? $ }
+
+	proto regex            expr { <...> }
+	regex       expr:sym<roll> { { say "parsing a roll?" } <roll> }
+	regex   expr:sym<modifier> { { say "parsing a mod?" } <modifier> }
+	regex          expr:sym<+> { { say "parsing a +?" } <expr> \s* '+' { say "I think it's a +." } \s* <expr> \s* { say "Yup, it was a +." } }
+	regex          expr:sym<-> { { say "parsing a -?" } <expr> \s* '-' { say "I think it's a -." } \s* <expr> \s* { say "Yup, it was a -." } }
+
+	regex                 roll { <quantity> <die> \s* { say "yup, found a roll" } }
+	token             quantity { \d+ }
+	token                  die { d(\d+) }
+	regex             modifier { ('+'? | '-') \s* (\d+) \s* {say "yup, found a modifier" } }
 }
 
 # Other classes we use internally to represent the parsed dice string:-
@@ -155,7 +162,7 @@ has $.parsed is required;
 method new(Str $string) {
 	my $match = DiceGrammar.parse($string, :actions(DiceActions));
 	die "Failed to parse '$string'!" unless $match;
-	# say "Parsed: ", $match.gist;
+	say "Parsed: ", $match.gist;
 	return self.bless(string => $string, parsed => $match.made);
 }
 

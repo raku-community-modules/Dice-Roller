@@ -20,7 +20,9 @@ sub critmaybe($dice) {
 	}
 }
 
-show(Dice::Roller.new('1d20 + 3').roll);
+show(Dice::Roller.new('1d20 + 1d4').roll);
+exit;
+
 show(Dice::Roller.new('3d4 + 1; 2d6').roll);
 
 my $total = 0;
