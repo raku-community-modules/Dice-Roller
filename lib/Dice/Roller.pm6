@@ -135,10 +135,10 @@ class DiceActions {
 		make $<roll>».made;
 	}
 	method expression($/) {
-		say "EXPRESSION! ", $/;
+		say "EXPRESSION! ", join(', ', $/.caps);
 	}
 	method add_op:sym<+>($/) {
-		say "ADD_OP<+>! ", $/;
+		say "ADD_OP<+>! ", join(', ', $/.caps);
 	}
 	method add_op:sym<->($/) {
 		say "ADD_OP<->! ", $/;
