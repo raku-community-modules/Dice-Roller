@@ -135,16 +135,32 @@ class DiceActions {
 		make $<roll>».made;
 	}
 	method expression($/) {
-		say "EXPRESSION! ", join(', ', $/.caps);
+		say "EXPRESSION! ";
+		my $op = '+';
+		for $/.caps -> Pair $term_or_op {
+			given $term_or_op.key {
+				when "term" { 
+					my $term = $term_or_op.value;
+					say "  term, is going to be $op ", $term.made;
+				}
+				when "add_op" { 
+					$op = $term_or_op.value.made;
+					say "  add_op, setting $op";
+				}
+			}
+		}
 	}
 	method add_op:sym<+>($/) {
-		say "ADD_OP<+>! ", join(', ', $/.caps);
+		say "ADD_OP<+>! ", $/;
+		make $/.Str;
 	}
 	method add_op:sym<->($/) {
 		say "ADD_OP<->! ", $/;
+		make $/.Str;
 	}
 	method term($/) {
 		say "TERM! ", $/;
+		make $<roll>.made // $<modifier>.made;
 	}
 	method roll($/) {
 		# While there is only one 'die' token within the 'roll' grammar, we actually want
