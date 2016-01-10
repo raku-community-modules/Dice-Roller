@@ -74,7 +74,7 @@ class Modifier {
 	}
 
 	method Str {
-		return $!value >= 0 ?? "+$!value" !! "-$!value";
+		return $!value.Str;
 	}
 }
 
