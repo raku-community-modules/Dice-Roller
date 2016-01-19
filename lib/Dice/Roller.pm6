@@ -79,6 +79,14 @@ class Modifier does Dice::Roller::Rollable {
 		return [];
 	}
 
+	method is-max {
+		return True;
+	}
+
+	method is-min {
+		return True;
+	}
+
 	method total returns Int {
 		return $!value;
 	}
@@ -96,27 +104,6 @@ class Roll does Dice::Roller::Rollable {
 
 	method contents {
 		return (@.dice, @.modifiers).flat;
-	}
-
-
-	method set-max {
-		@!dice».set-max;
-	}
-
-	method set-min {
-		@!dice».set-min;
-	}
-
-	method is-max returns Bool {
-		return @!dice.all.is-max.Bool;
-	}
-
-	method is-min returns Bool {
-		return @!dice.all.is-min.Bool;
-	}
-
-	method total returns Int {
-		return [+] (@!dice».total, @!modifiers».total).flat;
 	}
 
 	method Str {
@@ -233,30 +220,13 @@ method contents {
 }
 
 
-method set-max {
-	$!parsed».set-max;
-	return self;
-}
-
-method set-min {
-	$!parsed».set-min;
-	return self;
-}
-
-method is-max returns Bool {
-	return $!parsed.all.is-max.Bool;
-}
-
-method is-min returns Bool {
-	return $!parsed.all.is-min.Bool;
-}
 
 method total returns Int {
 	return [+] self.group-totals;
 }
 
 method group-totals returns List {
-	return $!parsed».total;
+	return self.contents».total;
 }
 
 method Str {
