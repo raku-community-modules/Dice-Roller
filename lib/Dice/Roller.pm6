@@ -1,6 +1,6 @@
-unit class Dice::Roller;
-
 use Dice::Roller::Rollable;
+
+unit class Dice::Roller does Dice::Roller::Rollable;
 
 # Grammar defining a dice string:-
 # ------------------------------
@@ -228,10 +228,10 @@ method new(Str $string) {
 # http://doc.perl6.org/language/objects#Object_Construction
 
 
-method roll {
-	$!parsed».roll;
-	return self;
+method contents {
+	return $!parsed.list;
 }
+
 
 method set-max {
 	$!parsed».set-max;
