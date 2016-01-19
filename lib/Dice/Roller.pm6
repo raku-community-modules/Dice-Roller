@@ -1,5 +1,7 @@
 unit class Dice::Roller;
 
+use Dice::Roller::Rollable;
+
 # Grammar defining a dice string:-
 # ------------------------------
 
@@ -22,7 +24,7 @@ grammar DiceGrammar {
 # -------------------------------------------------------------------
 
 # A single polyhedron.
-class Die {
+class Die does Dice::Roller::Rollable {
 	has Int $.faces;		# All around me different faces I see
 	has @.distribution;	# We will use this when rolling; this allows for non-linear dice to be added later.
 	has $.value is rw;	# Which face is showing, if any?
@@ -30,6 +32,10 @@ class Die {
 	submethod BUILD(:$!faces) {
 		# Initialise the distribution of values with a range of numbers from 1 to the number of faces the die has.
 		@!distribution = 1..$!faces;
+	}
+
+	method contents {
+		return [];
 	}
 	
 	method roll {
@@ -66,8 +72,12 @@ class Die {
 }
 
 # Some fixed value adjusting a roll's total outcome.
-class Modifier {
+class Modifier does Dice::Roller::Rollable {
 	has Int $.value is required;
+
+	method contents {
+		return [];
+	}
 
 	method total returns Int {
 		return $!value;
@@ -79,14 +89,15 @@ class Modifier {
 }
 
 # A roll of one or more polyhedra, with some rule about how we combine them.
-class Roll {
+class Roll does Dice::Roller::Rollable {
 	has Int $.quantity;
 	has Die @.dice;
 	has Modifier @.modifiers;
 
-	method roll {
-		@!dice».roll;
+	method contents {
+		return (@.dice, @.modifiers).flat;
 	}
+
 
 	method set-max {
 		@!dice».set-max;
@@ -120,8 +131,11 @@ class Roll {
 }
 
 
-class Expression {
-	has @.values
+class Expression does Dice::Roller::Rollable {
+	has Pair @.operations;
+
+	#### dummy while I work this out
+	method contents { return [] };
 }
 
 
@@ -241,7 +255,7 @@ method total returns Int {
 	return [+] self.group-totals;
 }
 
-method group-totals returns Array {
+method group-totals returns List {
 	return $!parsed».total;
 }
 
