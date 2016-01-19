@@ -134,6 +134,7 @@ class DiceActions {
 		# one entry for each of the roll expressions separated by ';' in the string.
 		make $<roll>».made;
 	}
+
 	method expression($/) {
 		say "EXPRESSION! ";
 		my $op = '+';
@@ -150,18 +151,22 @@ class DiceActions {
 			}
 		}
 	}
+
 	method add_op:sym<+>($/) {
 		say "ADD_OP<+>! ", $/;
 		make $/.Str;
 	}
+
 	method add_op:sym<->($/) {
 		say "ADD_OP<->! ", $/;
 		make $/.Str;
 	}
+
 	method term($/) {
 		say "TERM! ", $/;
 		make $<roll>.made // $<modifier>.made;
 	}
+
 	method roll($/) {
 		# While there is only one 'die' token within the 'roll' grammar, we actually want
 		# to construct the Roll object with multiple Die objects as appropriate, so that
@@ -171,12 +176,15 @@ class DiceActions {
 		my Modifier @modifiers = $<modifier>».made;
 		make Roll.new( :$quantity, :@dice, :@modifiers );
 	}
+
 	method quantity($/) {
 		make $/.Int;
 	}
+
 	method die($/) {
 		make Die.new( faces => $0.Int );
 	}
+
 	method modifier($/) {
 		make Modifier.new( value => "$0".Int );
 	}
