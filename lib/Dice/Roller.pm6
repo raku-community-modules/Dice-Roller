@@ -122,8 +122,13 @@ class Roll does Dice::Roller::Rollable {
 class Expression does Dice::Roller::Rollable {
 	has Pair @.operations;
 
-	#### dummy while I work this out
-	method contents { return [] };
+	method contents {
+		return @!operations».value;
+	}
+
+	method add(Str $op, Dice::Roller::Rollable $value) {
+		@!operations.push( $op => $value );
+	}
 }
 
 
@@ -134,17 +139,20 @@ class DiceActions {
 	method TOP($/) {
 		# .parse returns an array of Expression objects with this Actions object,
 		# one entry for each of the roll expressions separated by ';' in the string.
-		make $<roll>».made;
+		make $<expression>».made;
 	}
 
 	method expression:sym<add>($/) {
 		say "ADDITION EXPRESSION! ";
-		my $op = '+';
+		my $expression = Expression.new;
+		my Str $op = '+';
+
 		for $/.caps -> Pair $term_or_op {
 			given $term_or_op.key {
 				when "term" { 
 					my $term = $term_or_op.value;
 					say "  term, is going to be $op " ~ $term.made;
+					$expression.add($op, $term.made);
 				}
 				when "add_op" { 
 					$op = $term_or_op.value.made;
@@ -152,6 +160,7 @@ class DiceActions {
 				}
 			}
 		}
+		make $expression;
 	}
 
 	method add_op:sym<+>($/) {
