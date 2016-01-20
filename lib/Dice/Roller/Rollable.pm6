@@ -38,6 +38,6 @@ method is-min returns Bool {
 
 # If you had to put a number on it, what is this Rollable's total value?
 method total returns Int {
-	return [+] self.contents;
+	return [+] self.contents».total;
 }
 
