@@ -10,7 +10,7 @@ grammar DiceGrammar {
 
 	proto token         add_op {*}
 	rule            expression { <term> [ <add_op> <term> ]* }
-	rule                  term { <roll> | <modifier> }
+	token                 term { <roll> | <modifier> }
 	token        add_op:sym<+> { <sym> }
 	token        add_op:sym<-> { <sym> }
 
