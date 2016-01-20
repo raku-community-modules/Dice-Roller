@@ -129,6 +129,13 @@ class Expression does Dice::Roller::Rollable {
 	method add(Str $op, Dice::Roller::Rollable $value) {
 		@!operations.push( $op => $value );
 	}
+
+	method Str {
+		my Str $str = "";
+		for @!operations -> $op-pair {
+			$str ~= " " ~ $op-pair.gist;
+		}
+	}
 }
 
 
@@ -239,6 +246,7 @@ method group-totals returns List {
 }
 
 method Str {
+	return $!parsed.gist;
 	return join('; ', self.contents);
 }
 
