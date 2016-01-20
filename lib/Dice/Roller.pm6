@@ -8,8 +8,10 @@ unit class Dice::Roller does Dice::Roller::Rollable;
 grammar DiceGrammar {
 	token                  TOP { ^ <expression> [ ';' \s* <expression> ]* ';'? $ }
 
+	proto rule      expression {*}
 	proto token         add_op {*}
-	rule            expression { <term> [ <add_op> <term> ]* }
+
+	rule   expression:sym<add> { <term> [ <add_op> <term> ]* }
 	token                 term { <roll> | <modifier> }
 	token        add_op:sym<+> { <sym> }
 	token        add_op:sym<-> { <sym> }
@@ -100,19 +102,18 @@ class Modifier does Dice::Roller::Rollable {
 class Roll does Dice::Roller::Rollable {
 	has Int $.quantity;
 	has Die @.dice;
-	has Modifier @.modifiers;
 
 	method contents {
-		return (@.dice, @.modifiers).flat;
+		return @.dice;
 	}
 
 	method Str {
 		if any(@!dice».value) {
 			# one or more dice have been rolled, we don't need to prefix our quantity, they'll have literal values.
-			return join('', @!dice) ~ join('', @!modifiers);
+			return join('', @!dice);
 		} else {
 			# no dice have been rolled, we return a more abstract representation.
-			return $!quantity ~ @!dice[0] ~ join('', @!modifiers);
+			return $!quantity ~ @!dice[0];
 		}
 	}
 }
@@ -136,14 +137,14 @@ class DiceActions {
 		make $<roll>».made;
 	}
 
-	method expression($/) {
-		say "EXPRESSION! ";
+	method expression:sym<add>($/) {
+		say "ADDITION EXPRESSION! ";
 		my $op = '+';
 		for $/.caps -> Pair $term_or_op {
 			given $term_or_op.key {
 				when "term" { 
 					my $term = $term_or_op.value;
-					say "  term, is going to be $op ", $term.made;
+					say "  term, is going to be $op " ~ $term.made;
 				}
 				when "add_op" { 
 					$op = $term_or_op.value.made;
@@ -174,8 +175,7 @@ class DiceActions {
 		# we can roll and remember the face value of individual die.
 		my Int $quantity = $<quantity>.made;
 		my Die @dice = (1..$quantity).map({ $<die>.made.clone });
-		my Modifier @modifiers = $<modifier>».made;
-		make Roll.new( :$quantity, :@dice, :@modifiers );
+		make Roll.new( :$quantity, :@dice );
 	}
 
 	method quantity($/) {
@@ -230,6 +230,6 @@ method group-totals returns List {
 }
 
 method Str {
-	return join('; ', $!parsed.flat);
+	return join('; ', self.contents);
 }
 
