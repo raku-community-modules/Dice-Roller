@@ -11,7 +11,7 @@ grammar DiceGrammar {
 	proto rule      expression {*}
 	proto token         add_op {*}
 
-	rule   expression:sym<add> { <term> [ <add_op> <term> ]* }
+	rule   expression:sym<add> { <add_op>? <term> [ <add_op> <term> ]* }
 	token                 term { <roll> | <modifier> }
 	token        add_op:sym<+> { <sym> }
 	token        add_op:sym<-> { <sym> }
