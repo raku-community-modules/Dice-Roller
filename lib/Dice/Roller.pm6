@@ -215,7 +215,7 @@ class DiceActions {
 # used publically. Note that this accessor will be read-only by default.
 
 has Str $.string is required;
-has $.parsed is required;
+has @.parsed is required;
 
 # We define a custom .new method to allow for positional (non-named) parameters:-
 method new(Str $string) {
@@ -232,7 +232,7 @@ method new(Str $string) {
 
 
 method contents {
-	return $!parsed.list;
+	return @!parsed.list;
 }
 
 
@@ -246,6 +246,7 @@ method group-totals returns List {
 }
 
 method Str {
+	return self.contents.perl;
 	return join('; ', self.contents».flat);
 }
 
