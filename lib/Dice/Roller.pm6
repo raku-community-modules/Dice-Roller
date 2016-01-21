@@ -148,6 +148,7 @@ class Expression does Dice::Roller::Rollable {
 		for @!operations -> $op-pair {
 			$str ~= " " ~ $op-pair.key ~ ":" ~ $op-pair.value;
 		}
+		return $str;
 	}
 }
 
