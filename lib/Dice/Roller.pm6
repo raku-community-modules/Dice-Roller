@@ -146,7 +146,8 @@ class Expression does Dice::Roller::Rollable {
 	method Str {
 		my Str $str = "";
 		for @!operations -> $op-pair {
-			$str ~= " " ~ $op-pair.key ~ ":" ~ $op-pair.value;
+			$str ~= $op-pair.key if $str;
+			$str ~= $op-pair.value;
 		}
 		return $str;
 	}
