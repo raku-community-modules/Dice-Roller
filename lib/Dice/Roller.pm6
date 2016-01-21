@@ -168,14 +168,7 @@ class RollSet does Dice::Roller::Rollable {
 	}
 
 	method Str {
-		my Str $str = "";
-		for @!rolls -> $roll {
-			my $rollstr = $roll;
-			$rollstr = "NIL!" if !defined $roll;
-			$rollstr = "NILLL!" if !defined $roll.Str;
-			$str ~= " " ~ $rollstr ~ ";";
-		}
-		return $str;
+		return join('; ', @!rolls);
 	}
 }
 
