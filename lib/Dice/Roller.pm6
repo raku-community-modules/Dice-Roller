@@ -184,7 +184,6 @@ class DiceActions {
 	}
 
 	method expression:sym<add>($/) {
-		say "ADDITION EXPRESSION! ";
 		my $expression = Expression.new;
 		my Str $op = '+';
 
@@ -192,12 +191,10 @@ class DiceActions {
 			given $term_or_op.key {
 				when "term" { 
 					my $term = $term_or_op.value;
-					say "  term, is going to be $op " ~ $term.made;
 					$expression.add($op, $term.made);
 				}
 				when "add_op" { 
 					$op = $term_or_op.value.made;
-					say "  add_op, setting $op";
 				}
 			}
 		}
@@ -205,17 +202,14 @@ class DiceActions {
 	}
 
 	method add_op:sym<+>($/) {
-		say "ADD_OP<+>! ", $/;
 		make $/.Str;
 	}
 
 	method add_op:sym<->($/) {
-		say "ADD_OP<->! ", $/;
 		make $/.Str;
 	}
 
 	method term($/) {
-		say "TERM! ", $/;
 		make $<roll>.made // $<modifier>.made;
 	}
 
@@ -249,14 +243,15 @@ class DiceActions {
 # used publically. Note that this accessor will be read-only by default.
 
 has Str $.string is required;
+has Match $.match is required;
 has RollSet $.rollset is required;
 
 # We define a custom .new method to allow for positional (non-named) parameters:-
 method new(Str $string) {
 	my $match = DiceGrammar.parse($string, :actions(DiceActions));
 	die "Failed to parse '$string'!" unless $match;
-	say "Parsed: ", $match.gist;
-	return self.bless(string => $string, rollset => $match.made);
+	#say "Parsed: ", $match.gist;
+	return self.bless(string => $string, match => $match, rollset => $match.made);
 }
 
 # Note that in general, doing extra constructor work should happen in the BUILD submethod; doing our own
