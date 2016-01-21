@@ -139,14 +139,33 @@ class Expression does Dice::Roller::Rollable {
 }
 
 
+# Because returning an Array of Expressions doesn't seem to be working well for us,
+# let's stick the various (individual) rolls into one of these.
+class RollSet does Dice::Roller::Rollable {
+	has Dice::Roller::Rollable @.rolls;
+
+	method contents {
+		return @!rolls;
+	}
+
+	method group-totals returns List {
+		return @!rolls».total;
+	}
+
+	method Str {
+		return join('; ', @!rolls».Str);
+	}
+}
+
+
 # Actions used to build our internal representation from the grammar:-
 # ------------------------------------------------------------------
 
 class DiceActions {
 	method TOP($/) {
-		# .parse returns an array of Expression objects with this Actions object,
+		# .parse returns a RollSet with an array of Expression objects,
 		# one entry for each of the roll expressions separated by ';' in the string.
-		make $<expression>».made;
+		make RollSet.new( rolls => $<expression>».made );
 	}
 
 	method expression:sym<add>($/) {
@@ -215,14 +234,14 @@ class DiceActions {
 # used publically. Note that this accessor will be read-only by default.
 
 has Str $.string is required;
-has @.parsed is required;
+has RollSet $.rollset is required;
 
 # We define a custom .new method to allow for positional (non-named) parameters:-
 method new(Str $string) {
 	my $match = DiceGrammar.parse($string, :actions(DiceActions));
 	die "Failed to parse '$string'!" unless $match;
 	say "Parsed: ", $match.gist;
-	return self.bless(string => $string, parsed => $match.made);
+	return self.bless(string => $string, rollset => $match.made);
 }
 
 # Note that in general, doing extra constructor work should happen in the BUILD submethod; doing our own
@@ -232,21 +251,14 @@ method new(Str $string) {
 
 
 method contents {
-	return @!parsed.list;
-}
-
-
-
-method total returns Int {
-	return [+] self.group-totals;
+	return $!rollset;
 }
 
 method group-totals returns List {
-	return self.contents».total;
+	return $!rollset.group-totals;
 }
 
 method Str {
-	return self.contents.perl;
-	return join('; ', self.contents».flat);
+	return $!rollset.Str;
 }
 
