@@ -130,6 +130,19 @@ class Expression does Dice::Roller::Rollable {
 		@!operations.push( $op => $value );
 	}
 
+	# Expression needs to reimplement Total since we can now subtract parts of the roll.
+	method total returns Int {
+		my $total = 0;
+		for @!operations -> $op-pair {
+			given $op-pair.key {
+				when '+' { $total += $op-pair.value.total }
+				when '-' { $total -= $op-pair.value.total }
+				default  { die "unhandled Expression type " ~ $op-pair.key }
+			}
+		}
+		return $total;
+	}
+
 	method Str {
 		my Str $str = "";
 		for @!operations -> $op-pair {
@@ -153,7 +166,14 @@ class RollSet does Dice::Roller::Rollable {
 	}
 
 	method Str {
-		return join('; ', @!rolls».Str);
+		my Str $str = "";
+		for @!rolls -> $roll {
+			my $rollstr = $roll;
+			$rollstr = "NIL!" if !defined $roll;
+			$rollstr = "NILLL!" if !defined $roll.Str;
+			$str ~= " " ~ $rollstr ~ ";";
+		}
+		return $str;
 	}
 }
 
