@@ -20,5 +20,5 @@ sub critmaybe($dice) {
 	}
 }
 
-show(Dice::Roller.new('4d6').roll);
+show(Dice::Roller.new('4d20').roll);
 

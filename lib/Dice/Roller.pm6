@@ -74,11 +74,20 @@ class Die does Dice::Roller::Rollable {
 		return $!value // 0;
 	}
 
+	method Num {
+		return $!value;
+	}
+
 	method Str {
 		return "[$!value]" if $!value;
 		return "(d$!faces)";
 	}
 }
+
+multi infix:<cmp>(Die $a, Die $b) {
+	return $a.value cmp $b.value;
+}
+
 
 # Some fixed value adjusting a roll's total outcome.
 class Modifier does Dice::Roller::Rollable {
@@ -111,13 +120,14 @@ class KeepHighest does Dice::Roller::Selector {
 
 	method select ($roll) {
 		say "Selecting highest $.num rolls from '$roll'";
+		$roll.dice = $roll.dice.sort;
 	}
 }
 
 # A roll of one or more polyhedra, with some rule about how we combine them.
 class Roll does Dice::Roller::Rollable {
 	has Int $.quantity;
-	has Die @.dice;
+	has Die @.dice is rw;
 	has Dice::Roller::Selector @.selectors;
 
 	method contents {
