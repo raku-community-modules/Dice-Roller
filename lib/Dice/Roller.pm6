@@ -1,4 +1,5 @@
 use Dice::Roller::Rollable;
+use Dice::Roller::Selector;
 
 unit class Dice::Roller does Dice::Roller::Rollable;
 
@@ -10,15 +11,21 @@ grammar DiceGrammar {
 
 	proto rule      expression {*}
 	proto token         add_op {*}
+	proto token       selector {*}
 
 	rule   expression:sym<add> { <add_op>? <term> [ <add_op> <term> ]* }
 	token                 term { <roll> | <modifier> }
 	token        add_op:sym<+> { <sym> }
 	token        add_op:sym<-> { <sym> }
 
-	regex                 roll { <quantity> <die> }
+	regex                 roll { <quantity> <die> <selector>* }
 	token             quantity { \d+ }
 	token                  die { d(\d+) }
+   token     selector:sym<kh> { <sym>(\d+) }    # keep highest n
+   token     selector:sym<kl> { <sym>(\d+) }    # keep lowest n
+   token     selector:sym<dh> { <sym>(\d+) }    # drop highest n
+   token     selector:sym<dl> { <sym>(\d+) }    # drop lowest n
+
 	regex             modifier { (\d+) }
 }
 
@@ -98,13 +105,31 @@ class Modifier does Dice::Roller::Rollable {
 	}
 }
 
+# A thing that selects or adjusts certain dice from a Roll.
+class KeepHighest does Dice::Roller::Selector {
+	has Int $.num = 1;
+
+	method select ($roll) {
+		say "Selecting highest $.num rolls from '$roll'";
+	}
+}
+
 # A roll of one or more polyhedra, with some rule about how we combine them.
 class Roll does Dice::Roller::Rollable {
 	has Int $.quantity;
 	has Die @.dice;
+	has Dice::Roller::Selector @.selectors;
 
 	method contents {
 		return @.dice;
+	}
+
+	method roll {
+		@!dice».roll;
+		for @!selectors -> $selector {
+			$selector.select(self);
+		}
+		return self;
 	}
 
 	method Str {
@@ -219,7 +244,9 @@ class DiceActions {
 		# we can roll and remember the face value of individual die.
 		my Int $quantity = $<quantity>.made;
 		my Die @dice = (1..$quantity).map({ $<die>.made.clone });
-		make Roll.new( :$quantity, :@dice );
+
+		#### TEMP: All rolls are now kh3
+		make Roll.new( :$quantity, :@dice, selectors => KeepHighest.new(num => 3) );
 	}
 
 	method quantity($/) {
