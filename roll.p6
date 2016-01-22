@@ -21,11 +21,5 @@ sub critmaybe($dice) {
 }
 
 show(Dice::Roller.new('1d20 + 1d4 -2').roll);
-
 show(Dice::Roller.new('3d4 + 1; 2d6').roll);
 
-my $total = 0;
-$total += Dice::Roller.new('3d6').roll.total;
-say "Running total is $total";
-$total += Dice::Roller.new('3d6').roll.total;
-say "Running total is $total";
