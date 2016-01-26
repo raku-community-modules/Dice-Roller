@@ -263,9 +263,9 @@ class DiceActions {
 		# we can roll and remember the face value of individual die.
 		my Int $quantity = $<quantity>.made;
 		my Die @dice = (1..$quantity).map({ $<die>.made.clone });
+		my Dice::Roller::Selector @selectors = $<selector>».made;
 
-		#### TEMP: All rolls are now kh3
-		make Roll.new( :$quantity, :@dice, selectors => KeepHighest.new(num => 3) );
+		make Roll.new( :$quantity, :@dice, :@selectors );
 	}
 
 	method quantity($/) {
@@ -278,6 +278,10 @@ class DiceActions {
 
 	method modifier($/) {
 		make Modifier.new( value => "$0".Int );
+	}
+
+	method selector:sym<kh>($/) {
+		make KeepHighest.new( num => $0.Int );
 	}
 }
 
