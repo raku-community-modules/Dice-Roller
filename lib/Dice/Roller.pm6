@@ -112,17 +112,55 @@ class Modifier does Dice::Roller::Rollable {
 
 
 # A thing that selects or adjusts certain dice from a Roll.
+# In this case, we want to keep the highest num rolls.
 class KeepHighest does Dice::Roller::Selector {
 	has Int $.num = 1;
 
 	method select ($roll) {
-		my $drop = ($roll.dice.elems - $.num) max 0;
-		say "Selecting highest $.num rolls (dropping $drop) from '$roll'";
-		$roll.sort;
-		my @removed = $roll.dice.splice(0, $drop);	# Replace 0-num with empty
+		my $keep = $.num min $roll.dice.elems;
+		my $drop = $roll.dice.elems - $keep;
+		say "Selecting highest $keep rolls (dropping $drop) from '$roll'";
+		my @removed = $roll.sort.dice.splice(0, $drop);	# Replace 0..^drop with empty
 		say "Discarding: " ~ @removed;
 	}
 }
+
+class KeepLowest does Dice::Roller::Selector {
+	has Int $.num = 1;
+
+	method select ($roll) {
+		my $keep = $.num min $roll.dice.elems;
+		my $drop = $roll.dice.elems - $keep;
+		say "Selecting lowest $keep rolls (dropping $drop) from '$roll'";
+		my @removed = $roll.sort.dice.splice($keep);	# Replace keep..* with empty
+		say "Discarding: " ~ @removed;
+	}
+}
+
+class DropHighest does Dice::Roller::Selector {
+	has Int $.num = 1;
+
+	method select ($roll) {
+		my $drop = $.num min $roll.dice.elems;
+		my $keep = $roll.dice.elems - $drop;
+		say "Dropping highest $drop rolls (keeping $keep) from '$roll'";
+		my @removed = $roll.sort.dice.splice($keep);	# Replace keep..* with empty
+		say "Discarding: " ~ @removed;
+	}
+}
+
+class DropLowest does Dice::Roller::Selector {
+	has Int $.num = 1;
+
+	method select ($roll) {
+		my $drop = $.num min $roll.dice.elems;
+		my $keep = $roll.dice.elems - $drop;
+		say "Dropping lowest $drop rolls (keeping $keep) from '$roll'";
+		my @removed = $roll.sort.dice.splice(0, $drop);	# Replace 0..^drop with empty
+		say "Discarding: " ~ @removed;
+	}
+}
+
 
 
 # A roll of one or more polyhedra, with some rule about how we combine them.
@@ -282,6 +320,18 @@ class DiceActions {
 
 	method selector:sym<kh>($/) {
 		make KeepHighest.new( num => $0.Int );
+	}
+
+	method selector:sym<kl>($/) {
+		make KeepLowest.new( num => $0.Int );
+	}
+
+	method selector:sym<dh>($/) {
+		make DropHighest.new( num => $0.Int );
+	}
+
+	method selector:sym<dl>($/) {
+		make DropLowest.new( num => $0.Int );
 	}
 }
 
