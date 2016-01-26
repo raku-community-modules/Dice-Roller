@@ -84,10 +84,6 @@ class Die does Dice::Roller::Rollable {
 	}
 }
 
-multi infix:<cmp>(Die $a, Die $b) {
-	return $a.value cmp $b.value;
-}
-
 
 # Some fixed value adjusting a roll's total outcome.
 class Modifier does Dice::Roller::Rollable {
@@ -114,15 +110,20 @@ class Modifier does Dice::Roller::Rollable {
 	}
 }
 
+
 # A thing that selects or adjusts certain dice from a Roll.
 class KeepHighest does Dice::Roller::Selector {
 	has Int $.num = 1;
 
 	method select ($roll) {
-		say "Selecting highest $.num rolls from '$roll'";
-		$roll.dice = $roll.dice.sort;
+		my $drop = ($roll.dice.elems - $.num) max 0;
+		say "Selecting highest $.num rolls (dropping $drop) from '$roll'";
+		$roll.sort;
+		my @removed = $roll.dice.splice(0, $drop);	# Replace 0-num with empty
+		say "Discarding: " ~ @removed;
 	}
 }
+
 
 # A roll of one or more polyhedra, with some rule about how we combine them.
 class Roll does Dice::Roller::Rollable {
@@ -139,6 +140,14 @@ class Roll does Dice::Roller::Rollable {
 		for @!selectors -> $selector {
 			$selector.select(self);
 		}
+		return self;
+	}
+
+	# One thing that most Rollables don't do that's useful for Roll to be able to do,
+	# sort the $.dice in ascending order - primarily so Selectors can do their work.
+	# This sorts in-place.
+	method sort {
+		@!dice = @!dice.sort: { $^a.value cmp $^b.value };
 		return self;
 	}
 
