@@ -1,6 +1,6 @@
-# NAME
+# Dice::Roller
 
-Dice::Roller - Roll RPG-style polyhedral dice.
+Roll RPG-style polyhedral dice.
 
 # SYNOPSIS
 
