@@ -39,6 +39,8 @@ Preliminary support for some "selectors" is being added, and are appended to the
  * **:dh<n>** - drop the highest *n* dice from this group.
  * **:dl<n>** - drop the lowest *n* dice from this group.
 
+Selectors can be chained together, so rolling '4d6:dh1:dl1' will drop the highest and lowest value dice.
+
 ## roll
 
 ```perl6
