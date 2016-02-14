@@ -21,10 +21,10 @@ grammar DiceGrammar {
 	regex                 roll { <quantity> <die> <selector>* }
 	token             quantity { \d+ }
 	token                  die { d(\d+) }
-   token     selector:sym<kh> { <sym>(\d+) }    # keep highest n
-   token     selector:sym<kl> { <sym>(\d+) }    # keep lowest n
-   token     selector:sym<dh> { <sym>(\d+) }    # drop highest n
-   token     selector:sym<dl> { <sym>(\d+) }    # drop lowest n
+   token     selector:sym<kh> { ':' <sym>(\d+) }    # keep highest n
+   token     selector:sym<kl> { ':' <sym>(\d+) }    # keep lowest n
+   token     selector:sym<dh> { ':' <sym>(\d+) }    # drop highest n
+   token     selector:sym<dl> { ':' <sym>(\d+) }    # drop lowest n
 
 	regex             modifier { (\d+) }
 }

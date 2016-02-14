@@ -25,6 +25,6 @@ multi sub MAIN (Str $dice-string) {
 }
 
 multi sub MAIN () {
-	show(Dice::Roller.new('4d6kh3').roll);
+	show(Dice::Roller.new('4d6:kh3').roll);
 }
 

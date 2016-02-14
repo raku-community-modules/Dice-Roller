@@ -32,12 +32,12 @@ It is still under development, but in its present form supports varied dice expr
 
 The expression syntax used is the shorthand that is popular in RPG systems; rolls of a group of similar dice are expressed as <quantity>d<faces>, so 3d6 is a set of 3 six-sided dice, numbered 1..6. Additional groups of dice with different face counts can be added and subtracted from the total, as well as fixed integer values.
 
-Preliminary support for some "selectors" is being added, and are appended to the dice identifier; rolling '4d6kh3' stands for roll 4 d6, then keep the highest 3 dice. Selectors supported are:-
+Preliminary support for some "selectors" is being added, and are appended to the dice identifier; rolling '4d6:kh3' stands for roll 4 d6, then keep the highest 3 dice. Selectors supported are:-
 
- * **kh<n>** - keep the highest *n* dice from this group.
- * **kl<n>** - keep the lowest *n* dice from this group.
- * **dh<n>** - drop the highest *n* dice from this group.
- * **dl<n>** - drop the lowest *n* dice from this group.
+ * **:kh<n>** - keep the highest *n* dice from this group.
+ * **:kl<n>** - keep the lowest *n* dice from this group.
+ * **:dh<n>** - drop the highest *n* dice from this group.
+ * **:dl<n>** - drop the lowest *n* dice from this group.
 
 ## roll
 
