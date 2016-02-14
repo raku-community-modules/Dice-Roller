@@ -68,6 +68,6 @@ It's only on GitHub because of Panda. Don't expect a timely response if you requ
 
 # COPYRIGHT AND LICENCE
 
-Copyright 2016 James Clark
+Copyright 2016 James Clark <james@lazycat.com.au>
 
 Dice::Roller is Free Software; it is available under the Aristic Licence 2.0. See the LICENSE file for details.
