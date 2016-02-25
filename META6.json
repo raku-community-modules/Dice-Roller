@@ -14,5 +14,5 @@
 	},
 	"depends"     : [ ],
 	"support"     : { "email" : "perl@lazycat.com.au" },
-	"source-url"  : "https://bitbucket.org/jamesneko/dice-roller"
+	"source-url"  : "https://github.com/jamesneko/dice-roller.git"
 }
