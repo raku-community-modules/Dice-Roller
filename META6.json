@@ -2,7 +2,7 @@
 	"meta6"       : "0",
 	"perl"        : "6.c",
 	"name"        : "Dice::Roller",
-	"version"     : "0.1.0",
+	"version"     : "0.1.1",
 	"authors"     : [
 		"James Clark"
 	],
