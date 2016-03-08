@@ -62,6 +62,12 @@ Sets all dice in the expression to new random face values. Returns the Dice::Rol
 
 Evaluates the faces showing on rolled dice including any adjustments and returns an Int total for the roll.
 
+# ERROR HANDLING
+
+`Dice::Roller.new` throws an exception if the string failed to parse.
+
+This behaviour might change in a future release.
+
 # DEBUGGING
 
 You can get the module to spew out a bit of debugging text by setting `$Dice::Roller::debug = True`. You can also inspect the Match object in a given roll: `say $roll.match.gist`;

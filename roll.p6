@@ -23,6 +23,12 @@ sub critmaybe($dice) {
 multi sub MAIN (Str $dice-string) {
 	$Dice::Roller::debug = True;
 	show(Dice::Roller.new($dice-string).roll);
+	try {
+		my $roll = Dice::Roller.new("4f8 * 7");
+		CATCH {
+			default { say "good, $_"; }
+		}
+	}
 }
 
 multi sub MAIN () {
