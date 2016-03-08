@@ -353,7 +353,7 @@ has RollSet $.rollset is required;
 method new(Str $string) {
 	my $match = DiceGrammar.parse($string, :actions(DiceActions));
 	die "Failed to parse '$string'!" unless $match;
-	#say "Parsed: ", $match.gist if $!debug;
+	#say "Parsed: ", $match.gist if $debug;
 	return self.bless(string => $string, match => $match, rollset => $match.made);
 }
 
