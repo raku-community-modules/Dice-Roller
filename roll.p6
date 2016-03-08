@@ -21,10 +21,11 @@ sub critmaybe($dice) {
 }
 
 multi sub MAIN (Str $dice-string) {
+	$Dice::Roller::debug = True;
 	show(Dice::Roller.new($dice-string).roll);
 }
 
 multi sub MAIN () {
-	show(Dice::Roller.new('4d6:kh3').roll);
+	MAIN('4d6:kh3');
 }
 

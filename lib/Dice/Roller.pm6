@@ -3,6 +3,8 @@ use Dice::Roller::Selector;
 
 unit class Dice::Roller does Dice::Roller::Rollable;
 
+our $debug = False;	# Accessible as $Dice::Roller::debug;
+
 # Grammar defining a dice string:-
 # ------------------------------
 
@@ -119,9 +121,9 @@ class KeepHighest does Dice::Roller::Selector {
 	method select ($roll) {
 		my $keep = $.num min $roll.dice.elems;
 		my $drop = $roll.dice.elems - $keep;
-		say "Selecting highest $keep rolls (dropping $drop) from '$roll'";
+		say "Selecting highest $keep rolls (dropping $drop) from '$roll'" if $debug;
 		my @removed = $roll.sort.dice.splice(0, $drop);	# Replace 0..^drop with empty
-		say "Discarding: " ~ @removed;
+		say "Discarding: " ~ @removed if $debug;
 	}
 }
 
@@ -131,9 +133,9 @@ class KeepLowest does Dice::Roller::Selector {
 	method select ($roll) {
 		my $keep = $.num min $roll.dice.elems;
 		my $drop = $roll.dice.elems - $keep;
-		say "Selecting lowest $keep rolls (dropping $drop) from '$roll'";
+		say "Selecting lowest $keep rolls (dropping $drop) from '$roll'" if $debug;
 		my @removed = $roll.sort.dice.splice($keep);	# Replace keep..* with empty
-		say "Discarding: " ~ @removed;
+		say "Discarding: " ~ @removed if $debug;
 	}
 }
 
@@ -143,9 +145,9 @@ class DropHighest does Dice::Roller::Selector {
 	method select ($roll) {
 		my $drop = $.num min $roll.dice.elems;
 		my $keep = $roll.dice.elems - $drop;
-		say "Dropping highest $drop rolls (keeping $keep) from '$roll'";
+		say "Dropping highest $drop rolls (keeping $keep) from '$roll'" if $debug;
 		my @removed = $roll.sort.dice.splice($keep);	# Replace keep..* with empty
-		say "Discarding: " ~ @removed;
+		say "Discarding: " ~ @removed if $debug;
 	}
 }
 
@@ -155,9 +157,9 @@ class DropLowest does Dice::Roller::Selector {
 	method select ($roll) {
 		my $drop = $.num min $roll.dice.elems;
 		my $keep = $roll.dice.elems - $drop;
-		say "Dropping lowest $drop rolls (keeping $keep) from '$roll'";
+		say "Dropping lowest $drop rolls (keeping $keep) from '$roll'" if $debug;
 		my @removed = $roll.sort.dice.splice(0, $drop);	# Replace 0..^drop with empty
-		say "Discarding: " ~ @removed;
+		say "Discarding: " ~ @removed if $debug;
 	}
 }
 
@@ -346,11 +348,12 @@ has Str $.string is required;
 has Match $.match is required;
 has RollSet $.rollset is required;
 
+
 # We define a custom .new method to allow for positional (non-named) parameters:-
 method new(Str $string) {
 	my $match = DiceGrammar.parse($string, :actions(DiceActions));
 	die "Failed to parse '$string'!" unless $match;
-	#say "Parsed: ", $match.gist;
+	#say "Parsed: ", $match.gist if $!debug;
 	return self.bless(string => $string, match => $match, rollset => $match.made);
 }
 
