@@ -46,43 +46,42 @@ class Die does Dice::Roller::Rollable {
 	}
 
 	method contents {
-		return [];
+		[]
 	}
 	
 	method roll {
 		$!value = @.distribution.pick;
-		return self;
+		self
 	}
 
 	method set-max {
 		$!value = @.distribution.max;
-		return self;
+		self
 	}
 
 	method set-min {
 		$!value = @.distribution.min;
-		return self;
+		self
 	}
 
 	method is-max returns Bool {
-		return $!value == @.distribution.max;
+		$!value == @.distribution.max
 	}
 
 	method is-min returns Bool {
-		return $!value == @.distribution.min;
+		$!value == @.distribution.min
 	}
 
 	method total returns Int {
-		return $!value // 0;
+		$!value // 0
 	}
 
 	method Num {
-		return $!value;
+		$!value
 	}
 
 	method Str {
-		return "[$!value]" if $!value;
-		return "(d$!faces)";
+        $!value ?? "[$!value]" !! "(d$!faces)"
 	}
 }
 
@@ -91,27 +90,12 @@ class Die does Dice::Roller::Rollable {
 class Modifier does Dice::Roller::Rollable {
 	has Int $.value is required;
 
-	method contents {
-		return [];
-	}
-
-	method is-max {
-		return True;
-	}
-
-	method is-min {
-		return True;
-	}
-
-	method total returns Int {
-		return $!value;
-	}
-
-	method Str {
-		return $!value.Str;
-	}
+	method contents()       { []          }
+	method is-max(--> True) {             }
+	method is-min(--> True) {             }
+	method total(--> Int:D) { $!value     }
+	method Str(--> Str:D)   { $!value.Str }
 }
-
 
 # A thing that selects or adjusts certain dice from a Roll.
 # In this case, we want to keep the highest num rolls.
@@ -163,8 +147,6 @@ class DropLowest does Dice::Roller::Selector {
 	}
 }
 
-
-
 # A roll of one or more polyhedra, with some rule about how we combine them.
 class Roll does Dice::Roller::Rollable {
 	has Int $.quantity;
@@ -172,7 +154,7 @@ class Roll does Dice::Roller::Rollable {
 	has Dice::Roller::Selector @.selectors;
 
 	method contents {
-		return @.dice;
+		@.dice
 	}
 
 	method roll {
@@ -180,7 +162,7 @@ class Roll does Dice::Roller::Rollable {
 		for @!selectors -> $selector {
 			$selector.select(self);
 		}
-		return self;
+		self
 	}
 
 	# One thing that most Rollables don't do that's useful for Roll to be able to do,
@@ -188,16 +170,16 @@ class Roll does Dice::Roller::Rollable {
 	# This sorts in-place.
 	method sort {
 		@!dice = @!dice.sort: { $^a.value cmp $^b.value };
-		return self;
+		self
 	}
 
 	method Str {
 		if any(@!dice».value) {
 			# one or more dice have been rolled, we don't need to prefix our quantity, they'll have literal values.
-			return join('', @!dice);
+			join('', @!dice)
 		} else {
 			# no dice have been rolled, we return a more abstract representation.
-			return $!quantity ~ @!dice[0];
+			$!quantity ~ @!dice[0]
 		}
 	}
 }
@@ -207,7 +189,7 @@ class Expression does Dice::Roller::Rollable {
 	has Pair @.operations;
 
 	method contents {
-		return @!operations».value;
+		@!operations».value
 	}
 
 	method add(Str $op, Dice::Roller::Rollable $value) {
@@ -215,7 +197,7 @@ class Expression does Dice::Roller::Rollable {
 	}
 
 	# Expression needs to reimplement Total since we can now subtract parts of the roll.
-	method total returns Int {
+	method total(--> Int:D) {
 		my $total = 0;
 		for @!operations -> $op-pair {
 			given $op-pair.key {
@@ -224,38 +206,34 @@ class Expression does Dice::Roller::Rollable {
 				default  { die "unhandled Expression type " ~ $op-pair.key }
 			}
 		}
-		return $total;
+		$total
 	}
 
-	method Str {
+	method Str(--> Str:D) {
 		my Str $str = "";
 		for @!operations -> $op-pair {
 			$str ~= $op-pair.key if $str;
 			$str ~= $op-pair.value;
 		}
-		return $str;
+		$str
 	}
 }
 
-
-# Because returning an Array of Expressions doesn't seem to be working well for us,
-# let's stick the various (individual) rolls into one of these.
+# Because returning an Array of Expressions doesn't seem to be
+# working well for us, let's stick the various (individual)
+# rolls into one of these.
 class RollSet does Dice::Roller::Rollable {
 	has Dice::Roller::Rollable @.rolls;
 
-	method contents {
-		return @!rolls;
+	method contents { @!rolls }
+	method group-totals(--> List:D) {
+		@!rolls».total
 	}
 
-	method group-totals returns List {
-		return @!rolls».total;
-	}
-
-	method Str {
-		return join('; ', @!rolls);
+	method Str(--> Str:D) {
+		join('; ', @!rolls)
 	}
 }
-
 
 # Actions used to build our internal representation from the grammar:-
 # ------------------------------------------------------------------
@@ -340,12 +318,8 @@ class DiceActions {
 # Attributes of a Dice::Roller:-
 # ----------------------------
 
-# Attributes are all private by default, and defined with the '!' twigil. But using '.' instead instructs
-# Perl 6 to define the $!string attribute and automagically generate a .string *accessor* that can be
-# used publically. Note that this accessor will be read-only by default.
-
-has Str $.string is required;
-has Match $.match is required;
+has Str $.string      is required;
+has Match $.match     is required;
 has RollSet $.rollset is required;
 
 
@@ -354,24 +328,132 @@ method new(Str $string) {
 	my $match = DiceGrammar.parse($string, :actions(DiceActions));
 	die "Failed to parse '$string'!" unless $match;
 	#say "Parsed: ", $match.gist if $debug;
-	return self.bless(string => $string, match => $match, rollset => $match.made);
+	self.bless(string => $string, match => $match, rollset => $match.made)
 }
 
-# Note that in general, doing extra constructor work should happen in the BUILD submethod; doing our own
-# special new method here may complicate things in subclasses. But we do want a nice simple constructor,
-# and defining our own 'new' seems to be the best way to accomplish this.
-# http://doc.perl6.org/language/objects#Object_Construction
+method contents { $!rollset }
 
-
-method contents {
-	return $!rollset;
+method group-totals(--> List:D) {
+	$!rollset.group-totals
 }
 
-method group-totals returns List {
-	return $!rollset.group-totals;
-}
+method Str(--> Str:D) { $!rollset.Str }
 
-method Str {
-	return $!rollset.Str;
-}
+=begin pod
 
+=head1 NAME
+
+Dice::Roller - Roll RPG-style polyhedral dice
+
+=head1 SYNOPSIS
+
+=begin code :lang<raku>
+
+use Dice::Roller;
+
+my $dice = Dice::Roller.new("2d6 + 1");
+$dice.roll;
+say $dice.total;    # 4. Chosen by fair dice roll.
+$dice.set-max;
+say $dice.total;    # 13
+
+=end code
+
+=head1 DESCRIPTION
+
+Dice::Roller is the second of my forays into learning Raku. The aim
+is simple - take a "dice string" representing a series of RPG-style
+dice to be rolled, plus any modifiers, parse it, and get Raku to
+virtually roll the dice involved and report the total.
+
+It is still under development, but in its present form supports varied
+dice expressions adding and subtracting fixed modifiers or additional
+dice, as well as the "keep highest *n*" notations.
+    
+=head1 METHODS
+
+=head2 new
+
+=begin code :lang<raku>
+
+my $dice = Dice::Roller.new('3d6 + 6 + 1d4');
+
+=end code
+
+C<.new> takes a single argument (a dice expression) and returns a
+C<Dice::Roller> object representing that collection of dice.
+
+The expression syntax used is the shorthand that is popular in RPG
+systems; rolls of a group of similar dice are expressed as
+<quantity>d<faces>, so 3d6 is a set of 3 six-sided dice, numbered
+1..6. Additional groups of dice with different face counts can be
+added and subtracted from the total, as well as fixed integer values.
+
+Preliminary support for some "selectors" is being added, and are
+appended to the dice identifier; rolling '4d6:kh3' stands for roll
+4 d6, then keep the highest 3 dice. Selectors supported are:
+
+=item **:kh<n>** - keep the highest *n* dice from this group.
+=item **:kl<n>** - keep the lowest *n* dice from this group.
+=item **:dh<n>** - drop the highest *n* dice from this group.
+=item **:dl<n>** - drop the lowest *n* dice from this group.
+
+Selectors can be chained together, so rolling '4d6:dh1:dl1' will
+drop the highest and lowest value dice.
+
+=head2 roll
+
+=begin code :lang<raku>
+
+$dice.roll;
+
+=end code
+
+Sets all dice in the expression to new random face values. Returns
+the C<Dice::Roller> object for convenience, so you can do:
+
+=begin code :lang<raku>
+
+say $dice.roll.total;
+
+=end code
+
+=head2 total
+
+=begin code :lang<raku>
+
+my $persuade-roll = Dice::Roller.new('1d20 -2').roll;
+my $persuade-check = $persuade-roll.total;
+
+=end code
+
+Evaluates the faces showing on rolled dice including any adjustments
+and returns an C<Int> total for the roll.
+
+=head1 ERROR HANDLING
+
+C<Dice::Roller.new> throws an exception if the string failed to parse.
+
+This behaviour might change in a future release.
+
+=head1 DEBUGGING
+
+You can get the module to spew out a bit of debugging text by setting
+C<Dice::Roller::debug = True>. You can also inspect the Match object ini
+a given roll: C<say $roll.match.gist>;
+
+=head1 AUTHOR
+
+James Clark
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2016 - 2017 James Clark
+
+Copyright 2024 Raku Community
+
+This library is free software; you can redistribute it and/or modify it under the Artistic License 2.0.
+
+=end pod
+
+# vim: expandtab shiftwidth=4

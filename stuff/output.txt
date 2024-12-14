@@ -1,4 +1,4 @@
-$ ./roll.p6 
+$ ./bin/roll-
 Dice::Roller.new(string => "1d20")
 
 $ ./roll.p6 
